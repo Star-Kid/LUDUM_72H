@@ -28,15 +28,19 @@ public struct Cell
 
 public class FieldModel : MonoBehaviour
 {
-    const int fieldHeight = 10;
-    const int fieldWidth = 10;
+    int fieldWidth;
+    int fieldHeight;
+
     char[,] rawCells;
     public Cell[,] cells { private set; get; }
     //byte[,] walls
 
     int numberOfColors;
     int numberOfFurnitures;
+
     bool[][,] furnitureForms;
+
+    public TextAsset levelsData;
 
     void Awake()
     {
@@ -44,14 +48,28 @@ public class FieldModel : MonoBehaviour
         numberOfFurnitures = 4; //can be any, numberOfFurnitures should be >= numberOfColors
 
         FillFurnitureForms();
-        GenerateRawFieldData(); //char generation for now, reading from file - later
+
+        LoadLevelDataRandom();
+    }
+
+    public void LoadLevelDataRandom()
+    {
+        GenerateRawFieldData();
         FillCellsFromRawData();
     }
 
+    public void LoadLevelDataFixed(int level_idx)
+    {
+        ReadLevelDataFromFileByIndex(level_idx);
+        FillCellsFromRawData();
+    }
+
+
     void FillFurnitureForms()
     {
-        furnitureForms = new bool[numberOfFurnitures][,];
+        //Describe/change furniture forms here
         //form presentation by horizontal columns, upside down
+        furnitureForms = new bool[numberOfFurnitures][,];
         furnitureForms[0] = new bool[,] { { true,  true , true } };
         furnitureForms[1] = new bool[,] { { true } };
         furnitureForms[2] = new bool[,] { { true } };
@@ -60,17 +78,6 @@ public class FieldModel : MonoBehaviour
         {
             furnitureForms[i] = new bool[,] { { true } };
         }
-
-        /*int debugIdx = 3;
-        Debug.Log("length of furniture: " + furnitureForms[debugIdx].GetLength(0));
-        Debug.Log("height of furniture: " + furnitureForms[debugIdx].GetLength(1));
-        for (int j = 0; j < furnitureForms[debugIdx].GetLength(1); j++)
-        {
-            string form = "";
-            for (int i = 0; i < furnitureForms[debugIdx].GetLength(0); i++)
-                form += furnitureForms[debugIdx][i, j] ? '1' : '0';
-            Debug.Log(form);
-        }*/
     }
 
     bool CheckForEnoughSpaceForFurniture(int coord_x, int coord_y, FurnitureType f_type)
@@ -89,6 +96,9 @@ public class FieldModel : MonoBehaviour
     void GenerateRawFieldData()
     {
         System.Random rnd = new System.Random();
+        fieldWidth = rnd.Next(9, 12); //leesser values can procude endless cycle
+        fieldHeight = rnd.Next(9, 12);
+
         rawCells = new char[fieldWidth, fieldHeight];
         for (int i = 0; i < fieldWidth; i++)
             for (int j = 0; j < fieldHeight; j++)
@@ -156,8 +166,61 @@ public class FieldModel : MonoBehaviour
                 }
     }
 
-    void Update()
+    public void ReadLevelDataFromFileByIndex(int level_idx)
     {
-        
+        string[] data = levelsData.text.Split(Environment.NewLine);
+        int currentLevelIdx = 0;
+        int currentRowCounter = 0;
+        int currentMaxLenghOfString = 0;
+
+        foreach (string s in data)
+        {
+            //Debug.Log(s);
+            if (String.IsNullOrWhiteSpace(s))
+            {
+                if (currentLevelIdx == level_idx)
+                    break;
+                currentLevelIdx++;
+                currentRowCounter = 0;
+                currentMaxLenghOfString = 0;
+            }
+            else
+            {
+                if (s.Length > currentMaxLenghOfString)
+                    currentMaxLenghOfString = s.Length;
+                currentRowCounter++;
+            }
+        }
+        //Debug.Log("Level #" + level_idx + "reading has eneded. It has " + currentRowCounter + " rows");
+        //Debug.Log("Max Length of row is " + currentMaxLenghOfString);
+
+        fieldWidth = currentMaxLenghOfString;
+        fieldHeight = currentRowCounter;
+
+        rawCells = new char[fieldWidth, fieldHeight];
+
+        int idxStringStart = -1;
+        currentLevelIdx = 0;
+        for (int i = 0; i < data.Length; i++)
+        {
+            if (String.IsNullOrEmpty(data[i]))
+                if (idxStringStart == -1)
+                    currentLevelIdx++;
+                else
+                    break;
+
+            if (idxStringStart == -1)
+            {
+                if ((currentLevelIdx == level_idx) && !String.IsNullOrEmpty(data[i]))
+                    idxStringStart = i;
+            }
+            if (idxStringStart != -1)
+            {
+                for (int k = 0; k < data[i].Length; k++)
+                    rawCells[k, i - idxStringStart] = data[i][k];
+                for (int k = data[i].Length; k< rawCells.GetLength(0); k++)
+                    rawCells[k, i - idxStringStart] = '0';
+            }
+        }
     }
 }

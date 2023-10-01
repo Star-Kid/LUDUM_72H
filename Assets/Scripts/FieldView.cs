@@ -10,6 +10,10 @@ public class FieldView : MonoBehaviour
 
     public void SpawnGameField(Cell[,] cells)
     {
+        if (cellObjects != null)
+            foreach (GameObject cellObj in cellObjects)
+                Destroy(cellObj);
+
         int len = cells.GetLength(0);
         int hgt = cells.GetLength(1);
         const float cellSize = 1.2f;
