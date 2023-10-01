@@ -18,7 +18,7 @@ public class FieldView : MonoBehaviour
             for (int j=0; j < hgt; j++)
             {
                 cellObjects[i, j] = Instantiate(pCell, transform);
-                cellObjects[i, j].transform.position += new Vector3((i - (len / 2)) * cellSize, (j - (hgt / 2)) * cellSize);
+                cellObjects[i, j].transform.position += new Vector3((i - (len / 2)) * cellSize, ((hgt -1 - j) - (hgt / 2)) * cellSize);
                 cellObjects[i, j].GetComponent<CellView>().SetCellView(cells[i,j]);
             }
     }

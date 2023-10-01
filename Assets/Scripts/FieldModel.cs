@@ -5,7 +5,7 @@ using System;
 
 public enum FurnitureType
 {
-    Refrigerator, Stove, Toilet, Type4, Type5, Type6
+    Refrigerator, Stove, Toilet, Sofa, Type5, Type6
 }
 
 public enum FurnitureColor
@@ -23,56 +23,108 @@ public struct Cell
     public CellType cType;
     public FurnitureType fType;
     public FurnitureColor fColor;
-    //borders here
+    //info about the borders should be here too, I guess
 }
 
 public class FieldModel : MonoBehaviour
 {
-    const int height = 10;
-    const int width = 10;
+    const int fieldHeight = 10;
+    const int fieldWidth = 10;
     char[,] rawCells;
     public Cell[,] cells { private set; get; }
     //byte[,] walls
 
+    int numberOfColors;
+    int numberOfFurnitures;
+    bool[][,] furnitureForms;
+
     void Awake()
     {
+        numberOfColors = Enum.GetNames(typeof(FurnitureColor)).Length;
+        numberOfFurnitures = 4; //can be any, numberOfFurnitures should be >= numberOfColors
+
+        FillFurnitureForms();
         GenerateRawFieldData(); //char generation for now, reading from file - later
         FillCellsFromRawData();
+    }
+
+    void FillFurnitureForms()
+    {
+        furnitureForms = new bool[numberOfFurnitures][,];
+        //form presentation by horizontal columns, upside down
+        furnitureForms[0] = new bool[,] { { true,  true , true } };
+        furnitureForms[1] = new bool[,] { { true } };
+        furnitureForms[2] = new bool[,] { { true } };
+        furnitureForms[3] = new bool[,] { { true, true }, { false, true } };
+        for (int i = 4; i < furnitureForms.Length; i++)
+        {
+            furnitureForms[i] = new bool[,] { { true } };
+        }
+
+        /*int debugIdx = 3;
+        Debug.Log("length of furniture: " + furnitureForms[debugIdx].GetLength(0));
+        Debug.Log("height of furniture: " + furnitureForms[debugIdx].GetLength(1));
+        for (int j = 0; j < furnitureForms[debugIdx].GetLength(1); j++)
+        {
+            string form = "";
+            for (int i = 0; i < furnitureForms[debugIdx].GetLength(0); i++)
+                form += furnitureForms[debugIdx][i, j] ? '1' : '0';
+            Debug.Log(form);
+        }*/
+    }
+
+    bool CheckForEnoughSpaceForFurniture(int coord_x, int coord_y, FurnitureType f_type)
+    {
+        bool[,] fForm = furnitureForms[(int)f_type];
+        if ((coord_x + fForm.GetLength(0) >= fieldWidth) || (coord_y + fForm.GetLength(1) >= fieldHeight))
+            return false;
+        for (int i=0; i < fForm.GetLength(0); i++)
+            for (int j = 0; j < fForm.GetLength(1); j++)
+                if (fForm[i, j])
+                    if (rawCells[coord_x + i, coord_y+ j] != '0')
+                        return false;
+        return true;
     }
 
     void GenerateRawFieldData()
     {
         System.Random rnd = new System.Random();
-        rawCells = new char[width, height];
-        for (int i = 0; i < width; i++)
-            for (int j = 0; j < height; j++)
+        rawCells = new char[fieldWidth, fieldHeight];
+        for (int i = 0; i < fieldWidth; i++)
+            for (int j = 0; j < fieldHeight; j++)
                 rawCells[i, j] = '0';
 
         int numberOfColors = Enum.GetNames(typeof(FurnitureColor)).Length;
-        int numberOfFurnitures = 3; //can be any, numberOfFurnitures should be >= numberOfColors
+        int numberOfFurnitures = 4; //can be any, numberOfFurnitures should be >= numberOfColors
 
-        
-        for (int m = 0; m < numberOfFurnitures; m++)
+        //generate furnitures (simple)
+        for (int m = 0; m < numberOfFurnitures; m++) //numberOfFurnitures >= numberOfColors
             for (int k = 0; k < numberOfColors; k++)
             {
                 int rndX, rndY;
                 do
                 {
-                    rndX = rnd.Next(width);
-                    rndY = rnd.Next(height);
+                    rndX = rnd.Next(fieldWidth);
+                    rndY = rnd.Next(fieldHeight);
                 }
-                while (rawCells[rndX, rndY] != '0');
-                rawCells[rndX, rndY] = (char)(65 + (m * numberOfFurnitures) + k);
-                //Debug.Log("Raw cell value: " + (65 + (k * numberOfColors) + m).ToString());
+                while (!CheckForEnoughSpaceForFurniture(rndX, rndY, (FurnitureType)m ));
+
+                for (int i = 0; i < furnitureForms[m].GetLength(0); i++)
+                    for (int j = 0; j < furnitureForms[m].GetLength(1); j++)
+                        if (furnitureForms[m][i, j])
+                        {
+                            rawCells[rndX+i, rndY+j] = (char)(65 + (m * numberOfFurnitures) + k);
+                            //Debug.Log("Raw cell value: " + (65 + (m * numberOfFurnitures) + k).ToString());
+                        }
             }
 
         //generate exit
         do
         {
-            int rndX = rnd.Next(width);
-            int rndY = rnd.Next(height);
+            int rndX = rnd.Next(fieldWidth);
+            int rndY = rnd.Next(fieldHeight);
             if (rawCells[rndX, rndY] == '0')
-                if ((rndX == 0) || (rndY == 0) || (rndX == width - 1) || (rndY == height - 1))
+                if ((rndX == 0) || (rndY == 0) || (rndX == fieldWidth - 1) || (rndY == fieldHeight - 1))
                 {
                     rawCells[rndX, rndY] = '*';
                     break;
@@ -83,9 +135,7 @@ public class FieldModel : MonoBehaviour
 
     void FillCellsFromRawData()
     {
-        cells = new Cell[width, height];
-        int numberOfFurnitures = Enum.GetNames(typeof(FurnitureType)).Length;
-        int numberOfColors = Enum.GetNames(typeof(FurnitureColor)).Length;
+        cells = new Cell[fieldWidth, fieldHeight];
 
         for (int i = 0; i < rawCells.GetLength(0); i++)
             for (int j = 0; j < rawCells.GetLength(1); j++)
@@ -99,9 +149,8 @@ public class FieldModel : MonoBehaviour
                         break;
                     default:
                         cells[i, j].cType = CellType.Furniture;
-                        //char values from 65 to 88 (ASCII) - furniture
+                        //char values from 65 to 88 (ASCII) - furnitures (by type and color)
                         cells[i, j].fType = (FurnitureType)(((int)rawCells[i, j] - 65) / numberOfFurnitures);
-                        //cells[i, j].fType = FurnitureType.Refrigerator;
                         cells[i, j].fColor = (FurnitureColor)(((int)rawCells[i, j] - 65) % numberOfColors);
                         break;
                 }

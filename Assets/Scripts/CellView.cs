@@ -32,8 +32,8 @@ public class CellView : MonoBehaviour
                     case FurnitureType.Toilet:
                         SetCellInfo("WC");
                         break;
-                    case FurnitureType.Type4:
-                        SetCellInfo("Type 4");
+                    case FurnitureType.Sofa:
+                        SetCellInfo("Sofa");
                         break;
                     case FurnitureType.Type5:
                         SetCellInfo("Type 5");
