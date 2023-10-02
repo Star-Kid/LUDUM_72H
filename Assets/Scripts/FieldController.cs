@@ -10,6 +10,7 @@ public class FieldController : MonoBehaviour
     void Start()
     {
         fView.SpawnGameField(fModel.cells, fModel.furnitureForms);
+        fView.OnFurniturePlaced.AddListener(TryToPlaceNewFurnitureAndUpdateCurrentLevel);
     }
 
     public void SpawnRandomLevel()
@@ -21,6 +22,12 @@ public class FieldController : MonoBehaviour
     public void SpawnFixedLevel(int level_idx)
     {
         fModel.LoadLevelDataFixed(level_idx);
+        fView.SpawnGameField(fModel.cells, fModel.furnitureForms);
+    }
+
+    public void TryToPlaceNewFurnitureAndUpdateCurrentLevel(int x, int y, FurnitureType f_type, FurnitureColor f_color)
+    {
+        fModel.TryToPlaceNewFurnitureToCoords(x, y, f_type, f_color);
         fView.SpawnGameField(fModel.cells, fModel.furnitureForms);
     }
 }

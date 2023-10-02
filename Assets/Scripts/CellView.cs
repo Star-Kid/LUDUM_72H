@@ -22,7 +22,7 @@ public class CellView : MonoBehaviour
                 SetCellInfo("EXIT");
                 break;
             case CellType.Furniture:
-                SetCellInfo("");
+                //SetCellInfo("");
 
                 if (!furniture_already_spawned)
                 {
@@ -49,21 +49,7 @@ public class CellView : MonoBehaviour
                             break;
                     }*/
                     ColorSetter furnitureColorSetter = currentFurniture.GetComponent<ColorSetter>();
-                    switch (cell_info.fColor)
-                    {
-                        case FurnitureColor.Green:
-                            furnitureColorSetter.SetColor(Color.green);
-                            break;
-                        case FurnitureColor.Orange:
-                            furnitureColorSetter.SetColor(new Color(1, 0.5f, 0));
-                            break;
-                        case FurnitureColor.Red:
-                            furnitureColorSetter.SetColor(Color.red);
-                            break;
-                        case FurnitureColor.Yellow:
-                            furnitureColorSetter.SetColor(Color.yellow);
-                            break;
-                    }
+                    furnitureColorSetter.SetColor(cell_info.fColor);
                 }
                 break;
         }

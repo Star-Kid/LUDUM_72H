@@ -223,4 +223,24 @@ public class FieldModel : MonoBehaviour
             }
         }
     }
+
+    public void TryToPlaceNewFurnitureToCoords(int x, int y, FurnitureType f_type, FurnitureColor f_color)
+    {
+        if (CheckForEnoughSpaceForFurniture(x, y, f_type))
+        {
+            int idx_type = (int)f_type;
+            int idx_color = (int)f_color;
+
+            for (int i = 0; i < furnitureForms[idx_type].GetLength(0); i++)
+                for (int j = 0; j < furnitureForms[idx_type].GetLength(1); j++)
+                    if (furnitureForms[idx_type][i, j])
+                    {
+                        rawCells[x + i, y + j] = (char)(65 + (idx_type * numberOfFurnitures) + idx_color);
+                        Debug.Log("Setting cell: " + (x + i) + "," + (y + j) + " to value: " + rawCells[x + i, y + j]);
+                    }
+            FillCellsFromRawData();
+        }
+        else
+            Debug.Log("Not Enough place for new furniture!");
+    }
 }
