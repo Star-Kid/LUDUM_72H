@@ -9,18 +9,18 @@ public class FieldController : MonoBehaviour
     
     void Start()
     {
-        fView.SpawnGameField(fModel.cells);
+        fView.SpawnGameField(fModel.cells, fModel.furnitureForms);
     }
 
     public void SpawnRandomLevel()
     {
         fModel.LoadLevelDataRandom();
-        fView.SpawnGameField(fModel.cells);
+        fView.SpawnGameField(fModel.cells, fModel.furnitureForms);
     }
 
     public void SpawnFixedLevel(int level_idx)
     {
         fModel.LoadLevelDataFixed(level_idx);
-        fView.SpawnGameField(fModel.cells);
+        fView.SpawnGameField(fModel.cells, fModel.furnitureForms);
     }
 }

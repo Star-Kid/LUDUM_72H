@@ -35,10 +35,10 @@ public class FieldModel : MonoBehaviour
     public Cell[,] cells { private set; get; }
     //byte[,] walls
 
-    int numberOfColors;
-    int numberOfFurnitures;
+    public int numberOfColors { private set; get; }
+    public int numberOfFurnitures { private set; get; }
 
-    bool[][,] furnitureForms;
+    public bool[][,] furnitureForms { private set; get; }
 
     public TextAsset levelsData;
 

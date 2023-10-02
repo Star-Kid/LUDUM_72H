@@ -7,8 +7,9 @@ public class CellView : MonoBehaviour
 {
     public SpriteRenderer sRend;
     public TMP_Text label;
+    public GameObject[] furnitures;
 
-    public void SetCellView(Cell cell_info)
+    public void SetCellView(Cell cell_info, bool furniture_already_spawned)
     {
         switch (cell_info.cType)
         {
@@ -21,44 +22,57 @@ public class CellView : MonoBehaviour
                 SetCellInfo("EXIT");
                 break;
             case CellType.Furniture:
-                switch (cell_info.fType)
+                SetCellInfo("");
+
+                if (!furniture_already_spawned)
                 {
-                    case FurnitureType.Refrigerator:
-                        SetCellInfo("Refrigerator");
-                        break;
-                    case FurnitureType.Stove:
-                        SetCellInfo("Stove");
-                        break;
-                    case FurnitureType.Toilet:
-                        SetCellInfo("WC");
-                        break;
-                    case FurnitureType.Sofa:
-                        SetCellInfo("Sofa");
-                        break;
-                    case FurnitureType.Type5:
-                        SetCellInfo("Type 5");
-                        break;
-                    case FurnitureType.Type6:
-                        SetCellInfo("Type 6");
-                        break;
-                }
-                switch (cell_info.fColor)
-                {
-                    case FurnitureColor.Green:
-                        SetCellColor(Color.green);
-                        break;
-                    case FurnitureColor.Orange:
-                        SetCellColor(new Color(1, 0.5f, 0));
-                        break;
-                    case FurnitureColor.Red:
-                        SetCellColor(Color.red);
-                        break;
-                    case FurnitureColor.Yellow:
-                        SetCellColor(Color.yellow);
-                        break;
+                    GameObject currentFurniture = Instantiate(furnitures[(int)cell_info.fType], transform);
+                    /*switch (cell_info.fType)
+                    {
+                        case FurnitureType.Refrigerator:
+                            SetCellInfo("Refrigerator");
+                            break;
+                        case FurnitureType.Stove:
+                            SetCellInfo("Stove");
+                            break;
+                        case FurnitureType.Toilet:
+                            SetCellInfo("WC");
+                            break;
+                        case FurnitureType.Sofa:
+                            SetCellInfo("Sofa");
+                            break;
+                        case FurnitureType.Type5:
+                            SetCellInfo("Type 5");
+                            break;
+                        case FurnitureType.Type6:
+                            SetCellInfo("Type 6");
+                            break;
+                    }*/
+                    ColorSetter furnitureColorSetter = currentFurniture.GetComponent<ColorSetter>();
+                    switch (cell_info.fColor)
+                    {
+                        case FurnitureColor.Green:
+                            furnitureColorSetter.SetColor(Color.green);
+                            break;
+                        case FurnitureColor.Orange:
+                            furnitureColorSetter.SetColor(new Color(1, 0.5f, 0));
+                            break;
+                        case FurnitureColor.Red:
+                            furnitureColorSetter.SetColor(Color.red);
+                            break;
+                        case FurnitureColor.Yellow:
+                            furnitureColorSetter.SetColor(Color.yellow);
+                            break;
+                    }
                 }
                 break;
         }
+    }
+
+    public void ClearCell()
+    {
+        SetCellColor(Color.white);
+        SetCellInfo("");
     }
 
     void SetCellColor(Color color)
