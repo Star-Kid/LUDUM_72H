@@ -44,7 +44,7 @@ public class DraggableFurniture : MonoBehaviour, IBeginDragHandler, IDragHandler
             //log hit area to the console
             //Debug.Log(hit.point);
             Debug.Log("Hit! " + hit.transform.gameObject.name);
-            hit.transform.parent.GetComponent<FieldView>().GetHitCoors(hit.transform.gameObject, furnitureInfo.fType, furnitureInfo.fColor);
+            hit.transform.parent.GetComponent<FieldView>().GetDragEndHitCoors(hit.transform.gameObject, furnitureInfo.fType, furnitureInfo.fColor);
         }
     }
 

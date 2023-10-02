@@ -64,6 +64,11 @@ public class FieldModel : MonoBehaviour
         FillCellsFromRawData();
     }
 
+    public void LoadLevelDataEditor(int width, int height)
+    {
+        GenerateEmptyFieldData(width, height);
+        FillCellsFromRawData();
+    }
 
     void FillFurnitureForms()
     {
@@ -141,6 +146,17 @@ public class FieldModel : MonoBehaviour
                 }
         }
         while (true);
+    }
+
+    void GenerateEmptyFieldData(int width, int height)
+    {
+        fieldWidth = width;
+        fieldHeight = height;
+
+        rawCells = new char[fieldWidth, fieldHeight];
+        for (int i = 0; i < fieldWidth; i++)
+            for (int j = 0; j < fieldHeight; j++)
+                rawCells[i, j] = '0';
     }
 
     void FillCellsFromRawData()
@@ -242,5 +258,89 @@ public class FieldModel : MonoBehaviour
         }
         else
             Debug.Log("Not Enough place for new furniture!");
+    }
+
+    public bool ClearCellOrFurnitureCellsIfNotEmpty(int x, int y)
+    {
+        bool isNotEmpty = (cells[x,y].cType != CellType.Empty);
+        if (isNotEmpty)
+        {
+            if (cells[x, y].cType == CellType.Exit)
+            {
+                rawCells[x, y] = '0';
+            }
+            else
+            {
+                FurnitureType fType = cells[x, y].fType;
+                FurnitureColor fColor = cells[x, y].fColor;
+                int fLeftmostX = cells.GetLength(0);
+                int fUpmostY = cells.GetLength(1);
+                for (int i = 0; i < cells.GetLength(0); i++)
+                    for (int j = 0; j < cells.GetLength(1); j++)
+                        if ((cells[i, j].fType == fType) && (cells[i, j].fColor == fColor) && (cells[i, j].cType == CellType.Furniture))
+                        {
+                            if (isThereIsÑontinuosWayFromPossibleFurniturePointToClickedPoint(i, j, x, y, fType, fColor))
+                            {
+                                //åñëè íà ïîëå äâå îäèíàêîâûå ìåáåëè (ïî öâåòó è ôîðìå, áóäåò ãëþê - ìîæåò óäàëèòüñÿ íå òî
+                                if (i < fLeftmostX) fLeftmostX = i;
+                                if (j < fUpmostY) fUpmostY = j;
+                            }
+                        }
+
+                int fFormIndex = (int)fType;
+                for (int i = 0; i < furnitureForms[fFormIndex].GetLength(0); i++)
+                    for (int j = 0; j < furnitureForms[fFormIndex].GetLength(1); j++)
+                        if (furnitureForms[fFormIndex][i, j])
+                        {
+                            rawCells[fLeftmostX + i, fUpmostY + j] = '0';
+                        }
+            }
+            FillCellsFromRawData();
+        }
+        return isNotEmpty;
+    }
+
+    bool isThereIsÑontinuosWayFromPossibleFurniturePointToClickedPoint(int point_start_x, int point_start_y, int point_finish_x, int point_finish_y, FurnitureType f_type, FurnitureColor f_color)
+    {
+        if ((point_start_x == point_finish_x) && (point_start_y == point_finish_y))
+            return true;
+
+        bool noWayAtTheRight = false;
+        if (point_start_x + 1 < cells.GetLength(0))
+        {
+            if ((point_start_x + 1 == point_finish_x) && (point_start_y == point_finish_y))
+                return true;
+
+            if ((cells[point_start_x + 1, point_start_y].cType == CellType.Furniture) &&
+                (cells[point_start_x + 1, point_start_y].fType == f_type) &&
+                (cells[point_start_x + 1, point_start_y].fColor == f_color))
+            {
+                noWayAtTheRight = !isThereIsÑontinuosWayFromPossibleFurniturePointToClickedPoint(point_start_x + 1, point_start_y, point_finish_x, point_finish_y, f_type, f_color);
+            }
+            else
+                noWayAtTheRight = true;
+        }
+        else
+            noWayAtTheRight = true;
+
+        if (!noWayAtTheRight)
+            return true;
+
+        if (point_start_y + 1 < cells.GetLength(1))
+        {
+            if ((point_start_x == point_finish_x) && (point_start_y + 1 == point_finish_y))
+                return true;
+
+            if ((cells[point_start_x, point_start_y + 1].cType == CellType.Furniture) &&
+                (cells[point_start_x, point_start_y + 1].fType == f_type) &&
+                (cells[point_start_x, point_start_y + 1].fColor == f_color))
+            {
+                return isThereIsÑontinuosWayFromPossibleFurniturePointToClickedPoint(point_start_x, point_start_y + 1, point_finish_x, point_finish_y, f_type, f_color);
+            }
+            else
+                return false;
+        }
+        else
+            return false;
     }
 }
