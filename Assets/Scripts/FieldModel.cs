@@ -83,7 +83,7 @@ public class FieldModel : MonoBehaviour
     bool CheckForEnoughSpaceForFurniture(int coord_x, int coord_y, FurnitureType f_type)
     {
         bool[,] fForm = furnitureForms[(int)f_type];
-        if ((coord_x + fForm.GetLength(0) >= fieldWidth) || (coord_y + fForm.GetLength(1) >= fieldHeight))
+        if ((coord_x + fForm.GetLength(0) > fieldWidth) || (coord_y + fForm.GetLength(1) > fieldHeight))
             return false;
         for (int i=0; i < fForm.GetLength(0); i++)
             for (int j = 0; j < fForm.GetLength(1); j++)
@@ -96,7 +96,7 @@ public class FieldModel : MonoBehaviour
     void GenerateRawFieldData()
     {
         System.Random rnd = new System.Random();
-        fieldWidth = rnd.Next(9, 12); //leesser values can procude endless cycle
+        fieldWidth = rnd.Next(9, 12); //leesser values than 9 can procude endless cycle
         fieldHeight = rnd.Next(9, 12);
 
         rawCells = new char[fieldWidth, fieldHeight];
