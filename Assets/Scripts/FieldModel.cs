@@ -6,7 +6,7 @@ using System;
 //numberOfFurnitures should be >= numberOfColors
 public enum FurnitureType
 {
-    Coach, Stove, Toilet, DoubleBed, Bookshelf, Lamp, MagazineTable
+    Coach, Stove, Toilet, DoubleBed, Bookshelf, Lamp, MagazineTable, Type8, Type9, Type10, Type11, Type12, Type13
 }
 
 public enum FurnitureColor
@@ -38,6 +38,8 @@ public class FieldModel : MonoBehaviour
 
     public int numberOfColors { private set; get; }
     public int numberOfFurnitures { private set; get; }
+    int numberOfColorsMax;
+    int numberOfFurnituresMax;
 
     public bool[][,] furnitureForms { private set; get; }
 
@@ -45,12 +47,14 @@ public class FieldModel : MonoBehaviour
 
     void Awake()
     {
-        //numberOfColors = Enum.GetNames(typeof(FurnitureColor)).Length;
-        numberOfColors = 4;
-        numberOfFurnitures = 4; //can be any, numberOfFurnitures should be >= numberOfColors
+        numberOfColors = Enum.GetNames(typeof(FurnitureColor)).Length;
+        //numberOfFurnitures = Enum.GetNames(typeof(FurnitureType)).Length; //can be any, numberOfFurnitures should be >= numberOfColors
+        numberOfFurnitures = 7;
+
+        numberOfColorsMax = Enum.GetNames(typeof(FurnitureColor)).Length;
+        numberOfFurnituresMax = Enum.GetNames(typeof(FurnitureType)).Length;
 
         FillFurnitureForms();
-
         LoadLevelDataRandom();
     }
 
@@ -110,9 +114,12 @@ public class FieldModel : MonoBehaviour
             for (int j = 0; j < fieldHeight; j++)
                 rawCells[i, j] = '~';
 
+        int numberOfColorsForGeneration = 4;
+        int numberOfFurnituresForGeneration = 4; //can be any, numberOfFurnitures should be >= numberOfColors
+
         //generate furnitures (simple)
-        for (int m = 0; m < numberOfFurnitures; m++) //numberOfFurnitures >= numberOfColors
-            for (int k = 0; k < numberOfColors; k++)
+        for (int m = 0; m < numberOfFurnituresForGeneration; m++) //numberOfFurnitures >= numberOfColors
+            for (int k = 0; k < numberOfColorsForGeneration; k++)
             {
                 int rndX, rndY;
                 do
@@ -126,8 +133,7 @@ public class FieldModel : MonoBehaviour
                     for (int j = 0; j < furnitureForms[m].GetLength(1); j++)
                         if (furnitureForms[m][i, j])
                         {
-                            rawCells[rndX+i, rndY+j] = (char)(65 + (m * numberOfFurnitures) + k);
-                            //Debug.Log("Raw cell value: " + (65 + (m * numberOfFurnitures) + k).ToString());
+                            rawCells[rndX+i, rndY+j] = GetCharValueFromFTypeAndFColor((FurnitureType)m, (FurnitureColor)k);
                         }
             }
 
@@ -173,11 +179,30 @@ public class FieldModel : MonoBehaviour
                         break;
                     default:
                         cells[i, j].cType = CellType.Furniture;
-                        //char values from 65 to 88 (ASCII) - furnitures (by type and color)
-                        cells[i, j].fType = (FurnitureType)(((int)rawCells[i, j] - 65) / numberOfFurnitures);
-                        cells[i, j].fColor = (FurnitureColor)(((int)rawCells[i, j] - 65) % numberOfColors);
+                        //char values from 34 to 125 (ASCII) - furnitures (by type and color)
+                        cells[i, j].fType = GetFTypeFromRawValue(i, j);
+                        cells[i, j].fColor = GetFColorFromRawValue(i, j);
                         break;
                 }
+    }
+
+    FurnitureType GetFTypeFromRawValue(int i, int j)
+    {
+        return (FurnitureType)(((int)rawCells[i, j] - 34) / numberOfFurnituresMax);
+    }
+
+    FurnitureColor GetFColorFromRawValue(int i, int j)
+    {
+        //Debug.Log("From raw color is: " + (FurnitureColor)(((int)rawCells[i, j] - 34) % numberOfColorsMax));
+        //numberOfFurnitures >= numberOfColors
+        return (FurnitureColor)(((int)rawCells[i, j] - 34) % numberOfFurnituresMax);
+    }
+
+    char GetCharValueFromFTypeAndFColor(FurnitureType f_type, FurnitureColor f_color)
+    {
+        //Debug.Log("For furniture type " + f_type + ", color " + f_color + " setting value " + (char)(34 + ((int)f_type * numberOfFurnitures) + (int)f_color));
+        //numberOfFurnitures should be >= numberOfColors
+        return (char)(34 + ((int)f_type * numberOfFurnituresMax) + (int)f_color);
     }
 
     public void ReadLevelDataFromFileByIndex(int level_idx)
@@ -249,8 +274,8 @@ public class FieldModel : MonoBehaviour
                 for (int j = 0; j < furnitureForms[idx_type].GetLength(1); j++)
                     if (furnitureForms[idx_type][i, j])
                     {
-                        rawCells[x + i, y + j] = (char)(65 + (idx_type * numberOfFurnitures) + idx_color);
-                        Debug.Log("Setting cell: " + (x + i) + "," + (y + j) + " to value: " + rawCells[x + i, y + j]);
+                        rawCells[x + i, y + j] = GetCharValueFromFTypeAndFColor(f_type, f_color);
+                        //Debug.Log("Setting cell: " + (x + i) + "," + (y + j) + " to value: " + rawCells[x + i, y + j]);
                     }
             FillCellsFromRawData();
         }
@@ -367,7 +392,7 @@ public class FieldModel : MonoBehaviour
     }
 }
 
-public static class ColorConverter
+public static class ConverterUtils
 {
     public static Color GetColorFromFurnitureColor(FurnitureColor f_color)
     {

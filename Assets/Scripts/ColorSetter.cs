@@ -6,7 +6,7 @@ public class ColorSetter : MonoBehaviour
 {
     public void SetColor(FurnitureColor f_color)
     {
-        Color clr = ColorConverter.GetColorFromFurnitureColor(f_color);
+        Color clr = ConverterUtils.GetColorFromFurnitureColor(f_color);
 
         var renderer = GetComponent<MeshRenderer>();
         if (renderer != null)

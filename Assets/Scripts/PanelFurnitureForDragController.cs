@@ -17,6 +17,6 @@ public class PanelFurnitureForDragController : MonoBehaviour
         fColor = f_color;
 
         label.text = f_type.ToString();
-        GetComponent<Image>().color = ColorConverter.GetColorFromFurnitureColor(f_color);
+        GetComponent<Image>().color = ConverterUtils.GetColorFromFurnitureColor(f_color);
     }
 }
