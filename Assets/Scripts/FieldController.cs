@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SFB;
+using System;
 
 public class FieldController : MonoBehaviour
 {
@@ -49,4 +51,40 @@ public class FieldController : MonoBehaviour
             fView.SpawnGameField(fModel.cells, fModel.furnitureForms);
     }
 
+    public void SaveFieldToFile()
+    {
+        try
+        {
+            string dir_path = System.IO.Directory.GetCurrentDirectory();
+            var extensions = new[] {
+                new ExtensionFilter("Text files", "txt"),
+                new ExtensionFilter("All files", "*" ),
+            };
+            var path = StandaloneFileBrowser.SaveFilePanel("Save File", dir_path, "level_" + DateTime.Now.ToString("yyyy.MM.dd_\\hhh\\mmm\\sss") + ".txt", extensions);
+            if (path != "")
+            {
+                SaveFieldConfigToFile(path);
+                Debug.Log("Level file saved: " + path);
+            }
+            else
+                Debug.LogWarning("Filename is not selected!");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning("Error during field file save (?): " + ex.Message);
+        }
+    }
+
+    void SaveFieldConfigToFile(string filename)
+    {
+        string data = fModel.ExtractCurrentFieldRawData();
+        try
+        {
+            System.IO.File.WriteAllText(filename, data);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning("Error during field file save: " + ex.Message);
+        }
+    }
 }

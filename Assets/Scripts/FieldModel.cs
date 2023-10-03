@@ -343,4 +343,17 @@ public class FieldModel : MonoBehaviour
         else
             return false;
     }
+
+    public string ExtractCurrentFieldRawData()
+    {
+        string res = "";
+        
+        for (int j = 0; j < fieldHeight; j++)
+        {
+            for (int i = 0; i < fieldWidth; i++)
+                res += rawCells[i, j];
+            res += Environment.NewLine;
+        }
+        return res;
+    }
 }
