@@ -55,7 +55,7 @@ public class CellView : MonoBehaviour
             if (Input.GetMouseButtonDown(1)) //right click
             {
                 //Debug.Log("right click on cell in editor mode!");
-                transform.parent.GetComponent<FieldView>().GetRightClickCoors(gameObject);
+                transform.parent.GetComponent<FieldView>().GetRightClickCoords(gameObject);
             }
     }
 }

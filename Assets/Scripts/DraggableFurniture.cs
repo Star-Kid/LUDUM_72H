@@ -6,15 +6,17 @@ using UnityEngine.EventSystems;
 public class DraggableFurniture : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public PanelFurnitureForDragController furnitureInfo;
-    public GameObject[] pObjectsForDrag;
+    public GameObject pObjectsForDragContainer;
     GameObject objectForDrag;
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        Debug.Log("Begin drag!");
+        //Debug.Log("Begin drag!");
         int idx = (int)furnitureInfo.fType;
 
-        objectForDrag = Instantiate(pObjectsForDrag[idx]);
+        GameObject pObjectForDrag = pObjectsForDragContainer.GetComponent<CellView>().furnitures[idx];
+
+        objectForDrag = Instantiate(pObjectForDrag);
         objectForDrag.GetComponent<ColorSetter>().SetColor(furnitureInfo.fColor);
         objectForDrag.transform.localScale = new Vector3(objectForDrag.transform.localScale.x * 0.125f,
                                                          objectForDrag.transform.localScale.y * 0.5f,
@@ -31,7 +33,7 @@ public class DraggableFurniture : MonoBehaviour, IBeginDragHandler, IDragHandler
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        Debug.Log("End drag!");
+        //Debug.Log("End drag!");
         Destroy(objectForDrag);
 
         float distance = 50f;

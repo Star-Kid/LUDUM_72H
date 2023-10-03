@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using System;
 
 public class FieldView : MonoBehaviour
 {
@@ -37,14 +38,18 @@ public class FieldView : MonoBehaviour
                     if (!furnitureAlreadySpawnedHereFlags[i, j])
                     {
                         cellObjects[i, j].GetComponent<CellView>().SetCellView(cells[i, j], furnitureAlreadySpawnedHereFlags[i, j]);
-                        //Debug.Log("for cell (" + i + "," + j + "filling non-spawn squares");
+                        //Debug.Log("For cell (" + i + "," + j + ") filling non-spawn squares");
                         int fFormIdx = (int)cells[i, j].fType;
                         for (int k = i; k < i + furniture_forms[fFormIdx].GetLength(0); k++)
                             for (int m = j; m < j + furniture_forms[fFormIdx].GetLength(1); m++)
+                            {
                                 if (furniture_forms[fFormIdx][k - i, m - j])
+                                {
                                     furnitureAlreadySpawnedHereFlags[k, m] = true;
+                                }
+                            }
                     }
-                        cellObjects[i, j].GetComponent<CellView>().ClearCell();
+                    cellObjects[i, j].GetComponent<CellView>().ClearCell();
                 }
                 else
                     cellObjects[i, j].GetComponent<CellView>().SetCellView(cells[i, j], furnitureAlreadySpawnedHereFlags[i, j]);
@@ -64,7 +69,7 @@ public class FieldView : MonoBehaviour
         Debug.LogWarning("There is no cell object that match hit object!");
     }
 
-    public void GetRightClickCoors(GameObject hit_object)
+    public void GetRightClickCoords(GameObject hit_object)
     {
         for (int i = 0; i < cellObjects.GetLength(0); i++)
             for (int j = 0; j < cellObjects.GetLength(1); j++)

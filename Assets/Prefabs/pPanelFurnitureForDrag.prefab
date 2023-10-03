@@ -105,13 +105,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   furnitureInfo: {fileID: 3540389993712695379}
-  pObjectsForDrag:
-  - {fileID: 3006448197772333947, guid: 46b9d5777ca1e5e429129fca401c3131, type: 3}
-  - {fileID: 151161074697258398, guid: aa08118449931ca469a37ce77798e88b, type: 3}
-  - {fileID: 337953603950942316, guid: 925e02ba25855404ba8abb7fd4f12c49, type: 3}
-  - {fileID: 2900310458442607569, guid: 5cbeee3ddd312814286d921f8ce63e2c, type: 3}
-  - {fileID: 6901161901300198818, guid: 4294472f8a0dda54d8f1b57d1e0e72c6, type: 3}
-  - {fileID: 6901161901300198818, guid: 4294472f8a0dda54d8f1b57d1e0e72c6, type: 3}
+  pObjectsForDragContainer: {fileID: 8350413562087639127, guid: f2ef6080673babc45b4e03d6534475f0, type: 3}
 --- !u!1 &3540389993975970078
 GameObject:
   m_ObjectHideFlags: 0

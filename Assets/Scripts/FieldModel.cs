@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+//numberOfFurnitures should be >= numberOfColors
 public enum FurnitureType
 {
-    Refrigerator, Stove, Toilet, Sofa, Type5, Type6
+    Coach, Stove, Toilet, DoubleBed, Bookshelf, Lamp, MagazineTable
 }
 
 public enum FurnitureColor
 {
-    Red, Green, Yellow, Orange
+    Apple, GoldenDream, WellRead, Finn, EastSide, PoloBlue, FountainBlue
 }
 
 public enum CellType
@@ -44,7 +45,8 @@ public class FieldModel : MonoBehaviour
 
     void Awake()
     {
-        numberOfColors = Enum.GetNames(typeof(FurnitureColor)).Length;
+        //numberOfColors = Enum.GetNames(typeof(FurnitureColor)).Length;
+        numberOfColors = 4;
         numberOfFurnitures = 4; //can be any, numberOfFurnitures should be >= numberOfColors
 
         FillFurnitureForms();
@@ -72,17 +74,16 @@ public class FieldModel : MonoBehaviour
 
     void FillFurnitureForms()
     {
-        //Describe/change furniture forms here
-        //form presentation by horizontal columns, upside down
         furnitureForms = new bool[numberOfFurnitures][,];
-        furnitureForms[0] = new bool[,] { { true,  true , true } };
-        furnitureForms[1] = new bool[,] { { true } };
-        furnitureForms[2] = new bool[,] { { true } };
-        furnitureForms[3] = new bool[,] { { true, true }, { false, true } };
-        for (int i = 4; i < furnitureForms.Length; i++)
+        for (int i = 0; i < furnitureForms.Length; i++)
         {
             furnitureForms[i] = new bool[,] { { true } };
         }
+        //Describe/change furniture forms here
+        //form presentation by vertical columns, upside down
+        furnitureForms[0] = new bool[,] { { true,  true } }; //coach
+        furnitureForms[3] = new bool[,] { { true, true }, { true, true } }; //double bed
+
     }
 
     bool CheckForEnoughSpaceForFurniture(int coord_x, int coord_y, FurnitureType f_type)
@@ -93,7 +94,7 @@ public class FieldModel : MonoBehaviour
         for (int i=0; i < fForm.GetLength(0); i++)
             for (int j = 0; j < fForm.GetLength(1); j++)
                 if (fForm[i, j])
-                    if (rawCells[coord_x + i, coord_y+ j] != '0')
+                    if (rawCells[coord_x + i, coord_y+ j] != '~')
                         return false;
         return true;
     }
@@ -107,10 +108,7 @@ public class FieldModel : MonoBehaviour
         rawCells = new char[fieldWidth, fieldHeight];
         for (int i = 0; i < fieldWidth; i++)
             for (int j = 0; j < fieldHeight; j++)
-                rawCells[i, j] = '0';
-
-        int numberOfColors = Enum.GetNames(typeof(FurnitureColor)).Length;
-        int numberOfFurnitures = 4; //can be any, numberOfFurnitures should be >= numberOfColors
+                rawCells[i, j] = '~';
 
         //generate furnitures (simple)
         for (int m = 0; m < numberOfFurnitures; m++) //numberOfFurnitures >= numberOfColors
@@ -138,10 +136,10 @@ public class FieldModel : MonoBehaviour
         {
             int rndX = rnd.Next(fieldWidth);
             int rndY = rnd.Next(fieldHeight);
-            if (rawCells[rndX, rndY] == '0')
+            if (rawCells[rndX, rndY] == '~')
                 if ((rndX == 0) || (rndY == 0) || (rndX == fieldWidth - 1) || (rndY == fieldHeight - 1))
                 {
-                    rawCells[rndX, rndY] = '*';
+                    rawCells[rndX, rndY] = '!';
                     break;
                 }
         }
@@ -156,7 +154,7 @@ public class FieldModel : MonoBehaviour
         rawCells = new char[fieldWidth, fieldHeight];
         for (int i = 0; i < fieldWidth; i++)
             for (int j = 0; j < fieldHeight; j++)
-                rawCells[i, j] = '0';
+                rawCells[i, j] = '~';
     }
 
     void FillCellsFromRawData()
@@ -167,10 +165,10 @@ public class FieldModel : MonoBehaviour
             for (int j = 0; j < rawCells.GetLength(1); j++)
                 switch (rawCells[i, j])
                 {
-                    case '0':
+                    case '~':
                         cells[i, j].cType = CellType.Empty;
                         break;
-                    case '*':
+                    case '!':
                         cells[i, j].cType = CellType.Exit;
                         break;
                     default:
@@ -235,7 +233,7 @@ public class FieldModel : MonoBehaviour
                 for (int k = 0; k < data[i].Length; k++)
                     rawCells[k, i - idxStringStart] = data[i][k];
                 for (int k = data[i].Length; k< rawCells.GetLength(0); k++)
-                    rawCells[k, i - idxStringStart] = '0';
+                    rawCells[k, i - idxStringStart] = '~';
             }
         }
     }
@@ -267,7 +265,7 @@ public class FieldModel : MonoBehaviour
         {
             if (cells[x, y].cType == CellType.Exit)
             {
-                rawCells[x, y] = '0';
+                rawCells[x, y] = '~';
             }
             else
             {
@@ -292,7 +290,7 @@ public class FieldModel : MonoBehaviour
                     for (int j = 0; j < furnitureForms[fFormIndex].GetLength(1); j++)
                         if (furnitureForms[fFormIndex][i, j])
                         {
-                            rawCells[fLeftmostX + i, fUpmostY + j] = '0';
+                            rawCells[fLeftmostX + i, fUpmostY + j] = '~';
                         }
             }
             FillCellsFromRawData();
@@ -355,5 +353,39 @@ public class FieldModel : MonoBehaviour
             res += Environment.NewLine;
         }
         return res;
+    }
+}
+
+public static class ColorConverter
+{
+    public static Color GetColorFromFurnitureColor(FurnitureColor f_color)
+    {
+        //return new[] { SomeEnum.Item1, SomeEnum.Item2 };
+        Color clr = Color.magenta;
+        switch (f_color)
+        {
+            case FurnitureColor.Apple:
+                clr = new Color32(0x6F, 0xA1, 0x42, 0xFF);
+                break;
+            case FurnitureColor.GoldenDream:
+                clr = new Color32(0xF1, 0xCD, 0x38, 0xFF);
+                break;
+            case FurnitureColor.WellRead:
+                clr = new Color32(0xB5, 0x41, 0x31, 0xFF);
+                break;
+            case FurnitureColor.Finn:
+                clr = new Color32(0x6D, 0x31, 0x4D, 0xFF);
+                break;
+            case FurnitureColor.EastSide:
+                clr = new Color32(0xB3, 0x84, 0xD2, 0xFF);
+                break;
+            case FurnitureColor.PoloBlue:
+                clr = new Color32(0x83, 0x9B, 0xD1, 0xFF);
+                break;
+            case FurnitureColor.FountainBlue:
+                clr = new Color32(0x64, 0xBB, 0xC3, 0xFF);
+                break;
+        }
+        return clr;
     }
 }
