@@ -12,7 +12,10 @@ public class FieldView : MonoBehaviour
 
     [HideInInspector]
     public UnityEvent<int, int, FurnitureType, FurnitureColor> OnFurniturePlaced;
+    [HideInInspector]
     public UnityEvent<int, int> OnCellClear;
+    [HideInInspector]
+    public UnityEvent<int, int> OnExitPlaced;
 
     public void SpawnGameField(Cell[,] cells, bool[][,] furniture_forms)
     {
@@ -56,7 +59,7 @@ public class FieldView : MonoBehaviour
             }
     }
 
-    public void GetDragEndHitCoors(GameObject hit_object, FurnitureType f_type, FurnitureColor f_color)
+    public void GetDragEndHitCoords(GameObject hit_object, FurnitureType f_type, FurnitureColor f_color)
     {
         for (int i = 0; i < cellObjects.GetLength(0); i++)
             for (int j = 0; j < cellObjects.GetLength(1); j++)
@@ -67,6 +70,17 @@ public class FieldView : MonoBehaviour
                     return;
                 }
         Debug.LogWarning("There is no cell object that match hit object!");
+    }
+
+    public void GetDragEndHitCoordsForExit(GameObject hit_object)
+    {
+        for (int i = 0; i < cellObjects.GetLength(0); i++)
+            for (int j = 0; j < cellObjects.GetLength(1); j++)
+                if (cellObjects[i, j].Equals(hit_object))
+                {
+                    OnExitPlaced.Invoke(i, j);
+                    return;
+                }
     }
 
     public void GetRightClickCoords(GameObject hit_object)

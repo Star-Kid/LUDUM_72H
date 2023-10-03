@@ -5,6 +5,7 @@ using UnityEngine;
 public class DragPanelController : MonoBehaviour
 {
     public GameObject pFurnitureForDrag;
+    public GameObject pExitForDrag;
     public Transform dragPanelContent;
     public FieldModel fModel;
     GameObject[,] furniturePanels;
@@ -16,6 +17,8 @@ public class DragPanelController : MonoBehaviour
 
     public void FillPanelByFurnitureElements()
     {
+        Instantiate(pExitForDrag, dragPanelContent);
+
         furniturePanels = new GameObject[fModel.numberOfFurnitures, fModel.numberOfColors];
 
         for (int j = 0; j < fModel.numberOfColors; j++)

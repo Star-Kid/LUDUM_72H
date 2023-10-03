@@ -258,6 +258,17 @@ public class FieldModel : MonoBehaviour
             Debug.Log("Not Enough place for new furniture!");
     }
 
+    public bool TryToPlaceExitToCoords(int x, int y)
+    {
+        if (rawCells[x, y] == '~')
+        {
+            rawCells[x, y] = '!';
+            FillCellsFromRawData();
+            return true;
+        }
+        return false;
+    }
+
     public bool ClearCellOrFurnitureCellsIfNotEmpty(int x, int y)
     {
         bool isNotEmpty = (cells[x,y].cType != CellType.Empty);

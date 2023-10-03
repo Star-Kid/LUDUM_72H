@@ -15,6 +15,7 @@ public class FieldController : MonoBehaviour
         fView.SpawnGameField(fModel.cells, fModel.furnitureForms);
         fView.OnFurniturePlaced.AddListener(TryToPlaceNewFurnitureAndUpdateCurrentLevel);
         fView.OnCellClear.AddListener(DeleteNonEmptyCellAndUpdateCurrentLevel);
+        fView.OnExitPlaced.AddListener(TryToPlaceExitAndUpdateCurrentLevel);
         isEditorMode = false;
     }
 
@@ -48,6 +49,12 @@ public class FieldController : MonoBehaviour
     public void DeleteNonEmptyCellAndUpdateCurrentLevel(int x, int y)
     {
         if (fModel.ClearCellOrFurnitureCellsIfNotEmpty(x, y))
+            fView.SpawnGameField(fModel.cells, fModel.furnitureForms);
+    }
+
+    public void TryToPlaceExitAndUpdateCurrentLevel(int x, int y)
+    {
+        if (fModel.TryToPlaceExitToCoords(x, y))
             fView.SpawnGameField(fModel.cells, fModel.furnitureForms);
     }
 

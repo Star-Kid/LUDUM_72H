@@ -1977,6 +1977,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pFurnitureForDrag: {fileID: 3540389993712695383, guid: d0ecebf698df7914c91d7c71978e5349, type: 3}
+  pExitForDrag: {fileID: 3896879042212236777, guid: e40b753f737e58c429d19f68344c9444, type: 3}
   dragPanelContent: {fileID: 214115743}
   fModel: {fileID: 1911755754}
 --- !u!1 &835074772
@@ -3992,6 +3993,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   OnCellClear:
+    m_PersistentCalls:
+      m_Calls: []
+  OnExitPlaced:
     m_PersistentCalls:
       m_Calls: []
 --- !u!114 &1911755753

@@ -21,7 +21,7 @@ public class DraggableFurniture : MonoBehaviour, IBeginDragHandler, IDragHandler
         objectForDrag.transform.localScale = new Vector3(objectForDrag.transform.localScale.x * 0.125f,
                                                          objectForDrag.transform.localScale.y * 0.5f,
                                                          objectForDrag.transform.localScale.z * 0.125f);
-        objectForDrag.transform.localRotation = Quaternion.Euler(0, 0, 0);
+        objectForDrag.transform.localRotation = Quaternion.Euler(0, 180, 0);
         UpdateDragObjectPosition();
     }
 
@@ -46,7 +46,7 @@ public class DraggableFurniture : MonoBehaviour, IBeginDragHandler, IDragHandler
             //log hit area to the console
             //Debug.Log(hit.point);
             Debug.Log("Hit! " + hit.transform.gameObject.name);
-            hit.transform.parent.GetComponent<FieldView>().GetDragEndHitCoors(hit.transform.gameObject, furnitureInfo.fType, furnitureInfo.fColor);
+            hit.transform.parent.GetComponent<FieldView>().GetDragEndHitCoords(hit.transform.gameObject, furnitureInfo.fType, furnitureInfo.fColor);
         }
     }
 
